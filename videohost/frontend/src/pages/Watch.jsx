@@ -47,7 +47,11 @@ export default function Watch() {
     <div className="container watch">
       <div>
         <div className="player">
-          <video src={`/uploads/videos/${video.filename}`} controls autoPlay />
+          <video
+  src={`${import.meta.env.VITE_API_URL || ''}/uploads/videos/${video.filename}`}
+  controls
+  autoPlay
+/>
         </div>
 
         <div className="video-header">
