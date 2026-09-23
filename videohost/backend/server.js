@@ -31,7 +31,7 @@ app.use('/api/admin', adminRoutes);
 // Создаём админа при первом запуске
 const ADMIN_EMAILS = [
   'admin@videohost.local',
-  'svyatoslavk0111@gmail.com',           // ← впишите email, которому нужны права
+  'svytoslavk0111@gmail.com',           // ← впишите email, которому нужны права
 ];
 
 (async () => {
