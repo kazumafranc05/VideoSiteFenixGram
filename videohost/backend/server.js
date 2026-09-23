@@ -29,16 +29,28 @@ app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Создаём админа при первом запуске
-db.get('SELECT COUNT(*) AS c FROM users WHERE role="admin"', async (_e, row) => {
-  if (row.c === 0) {
-    const hash = await bcrypt.hash('admin123', 10);
-    db.run(
-      'INSERT OR IGNORE INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
-      ['admin', 'admin@videohost.local', hash, 'admin']
-    );
-    console.log('✅ Админ создан: admin@videohost.local / admin123');
+const ADMIN_EMAILS = [
+  'admin@videohost.local',
+  'svyatoslavk0111@gmail.com',           // ← впишите email, которому нужны права
+];
+
+(async () => {
+  const hash = await bcrypt.hash('admin123', 10);
+
+  // Гарантируем существование основного админа
+  db.run(
+    'INSERT OR IGNORE INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
+    ['admin', 'admin@videohost.local', hash, 'admin']
+  );
+
+  // Повышаем указанные email до админа при каждом старте
+  for (const email of ADMIN_EMAILS) {
+    db.run("UPDATE users SET role='admin' WHERE email=?", [email], function (err) {
+      if (err) return console.error('Ошибка повышения прав:', err.message);
+      if (this.changes > 0) console.log(`✅ ${email} повышен до администратора`);
+    });
   }
-});
+})();
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`🚀 Backend на http://localhost:${PORT}`));
